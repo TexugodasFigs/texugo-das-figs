@@ -1,3 +1,9 @@
+if('scrollRestoration' in history)history.scrollRestoration='manual';
+if(location.hash)history.replaceState(null,'',location.pathname+location.search);
+const resetPageToTop=()=>window.scrollTo({top:0,left:0,behavior:'instant'});
+resetPageToTop();
+window.addEventListener('pageshow',resetPageToTop,{once:true});
+
 const store=window.STORE;
 const packOrder=['premium','respostas','safadezas','anime','eleicoes','kpop','league-of-legends','divas-pop','gym','futebol','cantadas','trabalho'];
 store.packs.sort((a,b)=>packOrder.indexOf(a.id)-packOrder.indexOf(b.id));

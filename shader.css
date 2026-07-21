@@ -53,6 +53,36 @@
 .detail-cover {
   min-height: 0;
   aspect-ratio: 1 / 1;
+  align-self: start;
+}
+
+/* Mantém a coluna de conteúdo dentro da altura da capa quadrada no desktop. */
+@media (min-width: 1051px) {
+  .detail-copy {
+    padding: 22px 34px;
+  }
+
+  .detail-copy h3 {
+    margin: 12px 0 8px;
+    line-height: .98;
+  }
+
+  .detail-copy > p {
+    margin: 0;
+    line-height: 1.55;
+  }
+
+  .detail-preview-heading {
+    margin: 16px 0 7px;
+  }
+
+  .detail-benefits {
+    margin: 16px 0;
+  }
+
+  .detail-buy {
+    padding-top: 14px;
+  }
 }
 
 .cart-item img {

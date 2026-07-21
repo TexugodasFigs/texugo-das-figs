@@ -3,7 +3,7 @@
 window.STORE = {
   socials: {
     email: "mailto:texugodasfigs@gmail.com",
-    instagram: "https://www.instagram.com/texugo_das_figs/",
+    instagram: "https://www.instagram.com/texugodasfigs/",
     tiktok: "https://www.tiktok.com/@texugodasfigs",
     whatsapp: "https://wa.me/5588988181514?text=Olá%20Texugo%20das%20Figs!%20Quero%20saber%20mais%20sobre%20os%20packs."
   },

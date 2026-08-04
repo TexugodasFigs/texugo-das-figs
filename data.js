@@ -1,4 +1,5 @@
-// EDITE ESTE ARQUIVO para trocar links, preços, descrições e prévias.
+// EDITE ESTE ARQUIVO para trocar links, descrições e prévias.
+// Os preços vigentes ficam centralizados no bloco currentPrices ao final.
 // A ordem abaixo foi pensada para separar visualmente packs de cores parecidas.
 window.STORE = {
   socials: {
@@ -22,3 +23,28 @@ window.STORE = {
     {id:"league-of-legends",title:"League of Legends",category:"games",price:9.99,count:"+ de 60",image:"assets/packs/09-lol.png",mascot:"assets/emotes/lol.jpeg",color:"#374cb7",description:"Para comemorar a vitória, lamentar o feed e reagir como um verdadeiro invocador.",longDescription:"Um pack para quem conhece a alegria de uma vitória e a tristeza profunda de uma sequência de derrotas. Campeões, jogadores, jogadas duvidosas e reações para usar antes, durante e depois da partida — especialmente quando alguém culpa o jungler.",featuredPreview:"assets/previas/league-of-legends/lol-05.jpeg",previews:["assets/previas/league-of-legends/lol-01.mp4","assets/previas/league-of-legends/lol-02.mp4","assets/previas/league-of-legends/lol-03.jpeg","assets/previas/league-of-legends/lol-04.jpeg","assets/previas/league-of-legends/lol-05.jpeg"],payment:"https://mpago.la/2KBVoNj"}
   ]
 };
+
+// Valores confirmados nas páginas oficiais de pagamento em 04/08/2026.
+const currentPrices = {
+  premium: 9.99,
+  respostas: 4.99,
+  safadezas: 4.99,
+  trabalho: 4.99,
+  eleicoes: 2.99,
+  kpop: 4.99,
+  futebol: 4.99,
+  "divas-pop": 4.99,
+  gym: 2.49,
+  anime: 4.99,
+  cantadas: 4.99,
+  "league-of-legends": 4.99
+};
+
+window.STORE.packs.forEach(pack => {
+  pack.price = currentPrices[pack.id];
+  if (pack.id === "premium") {
+    pack.count = "Todos os packs";
+    pack.description = "Um único pagamento que dá direito a escolher todos os packs que quiser da loja — inclusive os temas mais nichados.";
+    pack.longDescription = "Com o Premium Pack, você não precisa escolher apenas um tema: pelo valor único do Premium, você tem direito a solicitar todos os packs que quiser disponíveis no site. Assim, pode montar sua coleção com humor, reações, futebol, anime, trabalho, fandoms e outros nichos, sem pagar separadamente por cada pack. O acesso é vitalício e o pagamento é feito uma única vez.";
+  }
+});

@@ -11,3 +11,27 @@
 @media(max-width:1050px){nav{display:none}.hero{grid-template-columns:1fr}.hero-copy{text-align:center}.hero-copy>p{margin-inline:auto}.hero-actions,.hero-stats{justify-content:center}.hero-art{max-width:650px;margin:auto}.pack-grid{grid-template-columns:repeat(3,1fr)}.security-panel{grid-template-columns:190px 1fr}.detail-panel{grid-template-columns:1fr}.detail-cover{min-height:auto;aspect-ratio:1.4}.detail-copy{padding:30px}.steps{grid-template-columns:1fr}.premium-section{margin-inline:24px}}
 @media(max-width:750px){.split-heading{display:block}.split-heading p{margin-top:16px}.trust-ticker>div{overflow:hidden;justify-content:flex-start}.trust-ticker span{white-space:nowrap}.catalog-tools{align-items:stretch;flex-direction:column}.search{min-width:0}.pack-grid{grid-template-columns:repeat(2,1fr)}.security-panel{margin-inline:16px;padding:28px;grid-template-columns:1fr;text-align:center}.security-panel>img{margin:auto}.benefit-grid{text-align:left}.detail-panel{box-shadow:7px 7px 0 color-mix(in srgb,var(--accent) 70%,transparent)}.step-grid{grid-template-columns:1fr}.step-grid article{min-height:auto;border-left:0;border-top:1px solid var(--line)}.step-grid i{margin:25px 0}.premium-section{grid-template-columns:1fr}.premium-copy{padding:15px}.custom-banner{margin-inline:16px;padding:35px;grid-template-columns:1fr;text-align:center}.custom-banner img{margin:auto}footer{display:flex;flex-direction:column;text-align:center}}
 @media(max-width:500px){.site-header{height:68px;padding:0 14px}.brand span{display:none}.hero{padding:35px 16px 55px;min-height:auto}.hero h1{font-size:46px}.hero-copy>p{font-size:15px}.hero-actions{flex-direction:column}.hero-stats{gap:16px}.preview-showcase,.catalog,.details-section,.steps,.faq{padding-left:16px;padding-right:16px;padding-top:75px}.split-heading h2{font-size:39px}.preview-tile{flex-basis:92px}.pack-grid{grid-template-columns:1fr}.pack-cover{aspect-ratio:1.35}.benefit-grid{grid-template-columns:1fr}.detail-copy{padding:22px 17px}.detail-copy h3{font-size:34px}.detail-preview-heading small{display:none}.detail-benefits{grid-template-columns:1fr}.detail-buy{align-items:stretch;gap:14px;flex-direction:column}.detail-buy .button{width:100%}.premium-section{margin:20px 16px 90px;padding:12px}.premium-copy h2{font-size:40px}.premium-copy ul{grid-template-columns:1fr}.premium-buy{align-items:stretch;gap:14px;flex-direction:column}.premium-buy .button{width:100%}.custom-banner h2{font-size:39px}}
+
+/* Fluxo de compra com entrega no WhatsApp */
+.step-grid{grid-template-columns:repeat(4,1fr)}
+.whatsapp-delivery-note{display:block;margin-top:.65rem;color:#9db1aa;font-size:.72rem;line-height:1.35}
+.detail-buy em{display:block;margin-top:.35rem;color:#49d7a0;font-size:.68rem;font-style:normal;font-weight:800;text-transform:uppercase;letter-spacing:.08em}
+body.purchase-open{overflow:hidden}
+.purchase-flow{position:fixed;inset:0;z-index:1000;display:grid;place-items:center;padding:20px;background:rgba(0,0,0,.8);backdrop-filter:blur(12px)}
+.purchase-flow[hidden]{display:none}
+.purchase-dialog{position:relative;width:min(720px,100%);max-height:min(90vh,760px);overflow:auto;scrollbar-width:thin;scrollbar-color:var(--green) #07130f;background:linear-gradient(145deg,#07130f,#020705);border:1px solid rgba(42,211,143,.42);border-radius:28px;padding:clamp(24px,5vw,48px);box-shadow:0 30px 80px rgba(0,0,0,.65),0 0 50px rgba(26,189,126,.15)}
+.purchase-dialog::-webkit-scrollbar{width:8px}.purchase-dialog::-webkit-scrollbar-track{background:#07130f;border-radius:99px}.purchase-dialog::-webkit-scrollbar-thumb{background:var(--green);border-radius:99px;border:2px solid #07130f}
+.purchase-close{position:absolute;top:16px;right:16px;width:38px;height:38px;border:1px solid var(--line);border-radius:50%;background:#ffffff0a;color:#fff;font-size:22px;cursor:pointer}
+.purchase-dialog h2{max-width:590px;margin:12px 0 14px;font-size:clamp(2rem,5vw,3.7rem);line-height:.96}
+.purchase-dialog>p{color:var(--muted);line-height:1.65}
+.purchase-selected{display:flex;justify-content:space-between;align-items:center;gap:18px;margin:24px 0;padding:16px 18px;border:1px solid var(--line);border-radius:14px;background:#ffffff08}
+.purchase-selected span{font-weight:800}.purchase-selected strong{color:#39d891;font:900 25px Archivo}
+.purchase-dialog-steps{display:grid;gap:12px;margin:24px 0}
+.purchase-dialog-steps article{display:flex;gap:14px;align-items:flex-start;padding:14px;border:1px solid var(--line);border-radius:13px;background:#06100c}
+.purchase-dialog-steps article>b{flex:0 0 34px;width:34px;height:34px;display:grid;place-items:center;border-radius:50%;background:var(--green2);color:#02130e}
+.purchase-dialog-steps article div{display:grid;gap:4px}.purchase-dialog-steps span{color:#9db1aa;font-size:.78rem;line-height:1.45}
+.purchase-dialog-actions{display:grid;grid-template-columns:1fr 1fr;gap:12px}.purchase-dialog-actions .button{width:100%;text-align:center}
+.whatsapp-button{background:#25d366;color:#02170d;box-shadow:0 10px 25px #25d36630}
+.purchase-reminder{margin:18px 0 0!important;padding:14px 16px;border-left:3px solid var(--green2);border-radius:8px;background:#0d2019;color:#d8e8e1!important;font-size:.8rem}
+@media(max-width:750px){.step-grid{grid-template-columns:1fr}}
+@media(max-width:650px){.purchase-flow{padding:10px}.purchase-dialog{border-radius:20px;padding:24px 18px}.purchase-dialog-actions{grid-template-columns:1fr}.purchase-selected{align-items:flex-start;flex-direction:column}}

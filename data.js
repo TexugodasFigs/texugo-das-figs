@@ -24,20 +24,20 @@ window.STORE = {
   ]
 };
 
-// Valores confirmados nas páginas oficiais de pagamento em 04/08/2026.
+// Preços exibidos na loja. Gym e Eleições mantêm seus valores promocionais próprios.
 const currentPrices = {
-  premium: 9.99,
-  respostas: 4.99,
-  safadezas: 4.99,
-  trabalho: 4.99,
-  eleicoes: 2.99,
-  kpop: 4.99,
-  futebol: 4.99,
-  "divas-pop": 4.99,
-  gym: 2.49,
-  anime: 4.99,
-  cantadas: 4.99,
-  "league-of-legends": 4.99
+  premium: 19.99,
+  respostas: 9.99,
+  safadezas: 9.99,
+  trabalho: 9.99,
+  eleicoes: 8.99,
+  kpop: 9.99,
+  futebol: 9.99,
+  "divas-pop": 9.99,
+  gym: 4.99,
+  anime: 9.99,
+  cantadas: 9.99,
+  "league-of-legends": 9.99
 };
 
 window.STORE.packs.forEach(pack => {
@@ -45,6 +45,6 @@ window.STORE.packs.forEach(pack => {
   if (pack.id === "premium") {
     pack.count = "Todos os packs";
     pack.description = "Um único pagamento que dá direito a escolher todos os packs que quiser da loja — inclusive os temas mais nichados.";
-    pack.longDescription = "Com o Premium Pack, você não precisa escolher apenas um tema: pelo valor único do Premium, você tem direito a solicitar todos os packs que quiser disponíveis no site. Assim, pode montar sua coleção com humor, reações, futebol, anime, trabalho, fandoms e outros nichos, sem pagar separadamente por cada pack. O acesso é vitalício e o pagamento é feito uma única vez.";
+    pack.longDescription = "Com o Premium Pack, você não precisa escolher apenas um tema: pelo valor único do Premium, você tem direito a solicitar todos os packs que quiser disponíveis no site. Depois do pagamento, basta enviar no WhatsApp o nome do Premium Pack e o comprovante. Você monta sua coleção com humor, reações, futebol, anime, trabalho, fandoms e outros nichos sem pagar separadamente por cada pack.";
   }
 });

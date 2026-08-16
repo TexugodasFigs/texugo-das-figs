@@ -70,6 +70,7 @@ function packCard(pack){
     <div class="pack-cover"><img src="${pack.image}" alt="Capa do pack ${pack.title}" loading="lazy"><span class="status-badge">${badges[pack.id]}</span>${pack.id==='safadezas'?'<span class="adult-badge">+18</span>':''}</div>
     <div class="pack-card-body"><div class="pack-meta"><span>${pack.category}</span><b>${pack.count} figurinhas</b></div><h3>${pack.title}</h3><p>${pack.description}</p>
       <div class="pack-price"><strong>${money(pack.price)}</strong><button class="button primary mini" data-buy="${pack.id}">Comprar</button></div>
+      <small class="whatsapp-delivery-note">Entrega pelo WhatsApp após o envio do comprovante</small>
       <button class="details-button" data-select-pack="${pack.id}">Ver detalhes do pack <span>⌄</span></button>
     </div>
   </article>`;
@@ -133,7 +134,7 @@ function renderDetail(id){
     <div class="detail-copy"><div class="detail-topline"><span>${pack.category}</span><span>Pagamento único</span></div><h3>${headlines[pack.id]}</h3><p>${pack.longDescription}</p>
       <div class="detail-preview-heading"><b>Veja algumas prévias</b><small>Espaços preparados para as imagens reais</small></div><div class="detail-preview-row">${[0,1,2,3,4].map(index=>previewTile(pack,index)).join('')}</div>
       <div class="detail-benefits"><span>✓ Figurinhas estáticas</span><span>✓ Figurinhas animadas</span><span>✓ Acesso vitalício</span><span>✓ ${pack.count} figurinhas</span></div>
-      <div class="detail-buy"><div><small>PACK COMPLETO POR</small><strong>${money(pack.price)}</strong></div><button class="button primary" data-buy="${pack.id}">Comprar agora ↗</button></div>
+      <div class="detail-buy"><div><small>PACK COMPLETO POR</small><strong>${money(pack.price)}</strong><em>Entrega pelo WhatsApp</em></div><button class="button primary" data-buy="${pack.id}">Comprar agora ↗</button></div>
     </div>`;
   watchPreviewMedia(root);
 }
@@ -142,13 +143,30 @@ function selectPack(id,scroll=true){renderDetail(id);if(scroll)document.querySel
 
 function buy(id){
   const pack=store.packs.find(item=>item.id===id);
-  if(!pack||!pack.payment.startsWith('http'))return;
-  window.open(pack.payment,'_blank','noopener,noreferrer');
+  const flow=document.querySelector('#purchase-flow');
+  if(!pack||!flow||!pack.payment.startsWith('http'))return;
+  const whatsappMessage=`Olá! Comprei o ${pack.title}. Vou enviar o comprovante nesta conversa para receber as figurinhas aqui no WhatsApp.`;
+  flow.querySelector('[data-purchase-pack]').textContent=pack.title;
+  flow.querySelector('[data-purchase-price]').textContent=money(pack.price);
+  flow.querySelector('[data-payment-link]').href=pack.payment;
+  flow.querySelector('[data-whatsapp-after-payment]').href=`https://wa.me/5588988181514?text=${encodeURIComponent(whatsappMessage)}`;
+  flow.hidden=false;
+  document.body.classList.add('purchase-open');
+  requestAnimationFrame(()=>flow.querySelector('[data-close-purchase]').focus());
+}
+
+function closePurchaseFlow(){
+  const flow=document.querySelector('#purchase-flow');
+  if(!flow||flow.hidden)return;
+  flow.hidden=true;
+  document.body.classList.remove('purchase-open');
 }
 
 document.addEventListener('click',event=>{
   const selector=event.target.closest('[data-select-pack]'),tab=event.target.closest('[data-detail-tab]'),buyButton=event.target.closest('[data-buy]');
   if(selector)selectPack(selector.dataset.selectPack,true);if(tab)selectPack(tab.dataset.detailTab,false);if(buyButton)buy(buyButton.dataset.buy);
+  if(event.target.closest('[data-close-purchase]')||event.target.matches('#purchase-flow'))closePurchaseFlow();
 });
+document.addEventListener('keydown',event=>{if(event.key==='Escape')closePurchaseFlow()});
 document.querySelectorAll('[data-social]').forEach(link=>{link.href=store.socials[link.dataset.social];link.target='_blank';link.rel='noopener'});
 renderHomePreviews();setupPreviewRotation();setupViewportAnimations();setupCatalog();setupDetails();

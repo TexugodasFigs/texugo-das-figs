@@ -25,6 +25,9 @@ const headlines={
   trabalho:'Sobreviva ao expediente com bom humor.'
 };
 const money=value=>value.toLocaleString('pt-BR',{style:'currency',currency:'BRL'});
+const whatsappNumber='5588988181514';
+const whatsappReceiptMessage=packName=>`Olá! Já efetuei o pagamento e quero receber minhas figurinhas. Nome do pack comprado: ${packName||'[DIGITE O NOME DO PACK AQUI]'}. Vou anexar o comprovante nesta conversa.`;
+const whatsappReceiptUrl=packName=>`https://wa.me/${whatsappNumber}?text=${encodeURIComponent(whatsappReceiptMessage(packName))}`;
 let activePack=packs[0].id;
 
 const previewObserver='IntersectionObserver' in window?new IntersectionObserver(entries=>{
@@ -71,6 +74,7 @@ function packCard(pack){
     <div class="pack-card-body"><div class="pack-meta"><span>${pack.category}</span><b>${pack.count} figurinhas</b></div><h3>${pack.title}</h3><p>${pack.description}</p>
       <div class="pack-price"><strong>${money(pack.price)}</strong><button class="button primary mini" data-buy="${pack.id}">Comprar</button></div>
       <small class="whatsapp-delivery-note">Entrega pelo WhatsApp após o envio do comprovante</small>
+      <a class="whatsapp-text-link" href="${whatsappReceiptUrl(pack.title)}" target="_blank" rel="noopener">Já comprou? Enviar comprovante pelo WhatsApp ↗</a>
       <button class="details-button" data-select-pack="${pack.id}">Ver detalhes do pack <span>⌄</span></button>
     </div>
   </article>`;
@@ -134,7 +138,7 @@ function renderDetail(id){
     <div class="detail-copy"><div class="detail-topline"><span>${pack.category}</span><span>Pagamento único</span></div><h3>${headlines[pack.id]}</h3><p>${pack.longDescription}</p>
       <div class="detail-preview-heading"><b>Veja algumas prévias</b><small>Espaços preparados para as imagens reais</small></div><div class="detail-preview-row">${[0,1,2,3,4].map(index=>previewTile(pack,index)).join('')}</div>
       <div class="detail-benefits"><span>✓ Figurinhas estáticas</span><span>✓ Figurinhas animadas</span><span>✓ Acesso vitalício</span><span>✓ ${pack.count} figurinhas</span></div>
-      <div class="detail-buy"><div><small>PACK COMPLETO POR</small><strong>${money(pack.price)}</strong><em>Entrega pelo WhatsApp</em></div><button class="button primary" data-buy="${pack.id}">Comprar agora ↗</button></div>
+      <div class="detail-buy"><div><small>PACK COMPLETO POR</small><strong>${money(pack.price)}</strong><em>Entrega pelo WhatsApp</em><a class="whatsapp-text-link" href="${whatsappReceiptUrl(pack.title)}" target="_blank" rel="noopener">Já pagou? Enviar comprovante ↗</a></div><button class="button primary" data-buy="${pack.id}">Comprar agora ↗</button></div>
     </div>`;
   watchPreviewMedia(root);
 }
@@ -149,7 +153,7 @@ function buy(id){
   flow.querySelector('[data-purchase-pack]').textContent=pack.title;
   flow.querySelector('[data-purchase-price]').textContent=money(pack.price);
   flow.querySelector('[data-payment-link]').href=pack.payment;
-  flow.querySelector('[data-whatsapp-after-payment]').href=`https://wa.me/5588988181514?text=${encodeURIComponent(whatsappMessage)}`;
+  flow.querySelector('[data-whatsapp-after-payment]').href=`https://wa.me/${whatsappNumber}?text=${encodeURIComponent(whatsappMessage)}`;
   flow.hidden=false;
   document.body.classList.add('purchase-open');
   requestAnimationFrame(()=>flow.querySelector('[data-close-purchase]').focus());
@@ -169,4 +173,5 @@ document.addEventListener('click',event=>{
 });
 document.addEventListener('keydown',event=>{if(event.key==='Escape')closePurchaseFlow()});
 document.querySelectorAll('[data-social]').forEach(link=>{link.href=store.socials[link.dataset.social];link.target='_blank';link.rel='noopener'});
+document.querySelectorAll('[data-whatsapp-receipt]').forEach(link=>{link.href=whatsappReceiptUrl();link.target='_blank';link.rel='noopener'});
 renderHomePreviews();setupPreviewRotation();setupViewportAnimations();setupCatalog();setupDetails();

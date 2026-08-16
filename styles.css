@@ -15,6 +15,11 @@
 /* Fluxo de compra com entrega no WhatsApp */
 .step-grid{grid-template-columns:repeat(4,1fr)}
 .whatsapp-delivery-note{display:block;margin-top:.65rem;color:#9db1aa;font-size:.72rem;line-height:1.35}
+.whatsapp-quick{background:#25d366;color:#02170d;box-shadow:0 10px 25px #25d36630}
+.whatsapp-text-link{display:inline-flex;align-items:center;margin-top:.55rem;color:#4ce39e;font-size:.68rem;font-weight:800;line-height:1.35;text-decoration:underline;text-decoration-color:#4ce39e55;text-underline-offset:4px}
+.whatsapp-text-link:hover{color:#8bf4c4;text-decoration-color:currentColor}
+.purchase-info-action{display:flex;align-items:center;justify-content:center;gap:18px;margin-top:22px;padding-top:22px;border-top:1px solid var(--line)}
+.purchase-info-action small{max-width:430px;color:var(--muted);font-size:.72rem;line-height:1.5}
 .detail-buy em{display:block;margin-top:.35rem;color:#49d7a0;font-size:.68rem;font-style:normal;font-weight:800;text-transform:uppercase;letter-spacing:.08em}
 body.purchase-open{overflow:hidden}
 .purchase-flow{position:fixed;inset:0;z-index:1000;display:grid;place-items:center;padding:20px;background:rgba(0,0,0,.8);backdrop-filter:blur(12px)}
@@ -34,4 +39,5 @@ body.purchase-open{overflow:hidden}
 .whatsapp-button{background:#25d366;color:#02170d;box-shadow:0 10px 25px #25d36630}
 .purchase-reminder{margin:18px 0 0!important;padding:14px 16px;border-left:3px solid var(--green2);border-radius:8px;background:#0d2019;color:#d8e8e1!important;font-size:.8rem}
 @media(max-width:750px){.step-grid{grid-template-columns:1fr}}
+@media(max-width:750px){.purchase-info-action{align-items:stretch;flex-direction:column;text-align:center}.purchase-info-action .button{width:100%}}
 @media(max-width:650px){.purchase-flow{padding:10px}.purchase-dialog{border-radius:20px;padding:24px 18px}.purchase-dialog-actions{grid-template-columns:1fr}.purchase-selected{align-items:flex-start;flex-direction:column}}

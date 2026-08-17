@@ -1,6 +1,6 @@
 # Texugo das Figs — guia simples
 
-Este site foi feito para funcionar gratuitamente no GitHub Pages. Não precisa instalar nada.
+Este site foi feito para funcionar gratuitamente no GitHub Pages. Não precisa instalar nada. 
 
 ## Antes de publicar
 

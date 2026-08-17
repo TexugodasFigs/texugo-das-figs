@@ -26,8 +26,18 @@ const headlines={
 };
 const money=value=>value.toLocaleString('pt-BR',{style:'currency',currency:'BRL'});
 const whatsappNumber='5588988181514';
-const whatsappReceiptMessage=packName=>`Olá, Texugo das Figs! Já realizei minha compra no site e quero receber as figurinhas pelo WhatsApp. Pack comprado: ${packName||'[DIGITE O NOME DO PACK AQUI]'}.`;
-const whatsappReceiptUrl=packName=>`https://wa.me/${whatsappNumber}?text=${encodeURIComponent(whatsappReceiptMessage(packName))}`;
+const sourceTag=new URLSearchParams(location.search).get('src')||'site';
+const makeOrderId=()=>`TXG-${Date.now().toString(36).slice(-5).toUpperCase()}${Math.random().toString(36).slice(2,4).toUpperCase()}`;
+const getLastOrder=()=>{try{return JSON.parse(localStorage.getItem('texugo:lastOrder')||'null')}catch{return null}};
+const saveOrder=pack=>{
+  const previous=getLastOrder();
+  if(previous&&previous.packId===pack.id&&Date.now()-previous.createdAt<30*60*1000)return previous;
+  const order={id:makeOrderId(),packId:pack.id,packName:pack.title,price:pack.price,source:sourceTag,status:'Novo',createdAt:Date.now()};
+  try{localStorage.setItem('texugo:lastOrder',JSON.stringify(order))}catch{}
+  return order;
+};
+const whatsappReceiptMessage=(packName,orderId)=>`Olá, Texugo das Figs! Quero receber minhas figurinhas pelo WhatsApp. Pedido: ${orderId||'[INFORME O NÚMERO DO PEDIDO]'}. Pack: ${packName||'[INFORME O PACK COMPRADO]'}. Já efetuei o pagamento pelo Mercado Pago. Se ele ainda não aparecer no atendimento, posso enviar o comprovante.`;
+const whatsappReceiptUrl=(packName,orderId)=>`https://wa.me/${whatsappNumber}?text=${encodeURIComponent(whatsappReceiptMessage(packName,orderId))}`;
 let activePack=packs[0].id;
 
 const previewObserver='IntersectionObserver' in window?new IntersectionObserver(entries=>{
@@ -149,9 +159,11 @@ function buy(id){
   const pack=store.packs.find(item=>item.id===id);
   const flow=document.querySelector('#purchase-flow');
   if(!pack||!flow||!pack.payment.startsWith('http'))return;
-  const whatsappMessage=whatsappReceiptMessage(pack.title);
+  const order=saveOrder(pack);
+  const whatsappMessage=whatsappReceiptMessage(pack.title,order.id);
   flow.querySelector('[data-purchase-pack]').textContent=pack.title;
   flow.querySelector('[data-purchase-price]').textContent=money(pack.price);
+  flow.querySelector('[data-purchase-order]').textContent=order.id;
   flow.querySelector('[data-payment-link]').href=pack.payment;
   flow.querySelector('[data-whatsapp-after-payment]').href=`https://wa.me/${whatsappNumber}?text=${encodeURIComponent(whatsappMessage)}`;
   flow.hidden=false;
@@ -173,6 +185,6 @@ document.addEventListener('click',event=>{
 });
 document.addEventListener('keydown',event=>{if(event.key==='Escape')closePurchaseFlow()});
 document.querySelectorAll('[data-social]').forEach(link=>{link.href=store.socials[link.dataset.social];link.target='_blank';link.rel='noopener'});
-document.querySelectorAll('[data-whatsapp-receipt]').forEach(link=>{link.href=whatsappReceiptUrl();link.target='_blank';link.rel='noopener'});
-document.querySelectorAll('[data-whatsapp-premium]').forEach(link=>{link.href=whatsappReceiptUrl('Premium Pack');link.target='_blank';link.rel='noopener'});
+document.querySelectorAll('[data-whatsapp-receipt]').forEach(link=>{const order=getLastOrder();link.href=whatsappReceiptUrl(order?.packName,order?.id);link.target='_blank';link.rel='noopener'});
+document.querySelectorAll('[data-whatsapp-premium]').forEach(link=>{const order=getLastOrder();link.href=whatsappReceiptUrl('Premium Pack',order?.packId==='premium'?order.id:null);link.target='_blank';link.rel='noopener'});
 renderHomePreviews();setupPreviewRotation();setupViewportAnimations();setupCatalog();setupDetails();

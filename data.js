@@ -6,7 +6,7 @@ window.STORE = {
     email: "mailto:texugodasfigs@gmail.com",
     instagram: "https://www.instagram.com/texugodasfigs/",
     tiktok: "https://www.tiktok.com/@texugodasfigs",
-    whatsapp: "https://wa.me/5588988181514?text=Ol%C3%A1%2C%20Texugo%20das%20Figs!%20Queria%20saber%20mais%20sobre%20os%20seus%20packs."
+    whatsapp: "https://wa.me/5588992367356?text=Ol%C3%A1%2C%20Texugo%20das%20Figs!%20Queria%20saber%20mais%20sobre%20os%20seus%20packs."
   },
   packs: [
     {id:"premium",title:"Premium Pack",category:"premium",price:11.99,count:"Todos os packs",image:"assets/packs/03-premium.png",color:"#d5ac2e",description:"Um único pagamento que dá direito a escolher todos os packs que quiser da loja — inclusive os temas mais nichados.",longDescription:"Com o Premium Pack, você não precisa escolher apenas um tema: pelo valor único do Premium, você tem direito a solicitar todos os packs que quiser disponíveis no site. Depois do pagamento, use o botão de atendimento para abrir a conversa no WhatsApp. Você monta sua coleção com humor, reações, futebol, anime, trabalho, fandoms e outros nichos sem pagar separadamente por cada pack.",previews:["assets/previas/respostas/respostas-06.mp4","assets/previas/safadezas/safadezas-01.mp4","assets/previas/anime/anime-02.mp4","assets/previas/league-of-legends/lol-05.jpeg","assets/previas/futebol/futebol-03.jpeg"],payment:"https://mpago.la/1up4NMd"},

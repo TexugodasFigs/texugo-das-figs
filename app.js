@@ -25,7 +25,7 @@ const headlines={
   trabalho:'Sobreviva ao expediente com bom humor.'
 };
 const money=value=>value.toLocaleString('pt-BR',{style:'currency',currency:'BRL'});
-const whatsappNumber='5588988181514';
+const whatsappNumber='5588992367356';
 const getLastPack=()=>{try{return JSON.parse(localStorage.getItem('texugo:lastPack')||'null')}catch{return null}};
 const saveLastPack=pack=>{try{localStorage.setItem('texugo:lastPack',JSON.stringify({id:pack.id,title:pack.title}))}catch{}};
 const packLabel=packName=>packName==='Premium Pack'?'Premium Pack':`Pack de ${packName}`;

@@ -7,7 +7,10 @@ window.addEventListener('pageshow',resetPageToTop,{once:true});
 const store=window.STORE;
 const packOrder=['premium','respostas','safadezas','anime','eleicoes','kpop','league-of-legends','divas-pop','gym','futebol','cantadas','trabalho'];
 store.packs.sort((a,b)=>packOrder.indexOf(a.id)-packOrder.indexOf(b.id));
-store.packs.forEach(pack=>{pack.count=pack.id==='premium'?'Todos os packs':pack.id==='gym'?'+ de 40':'+ de 60'});
+store.packs.forEach(pack=>{
+  const counts={premium:'+ de 660',respostas:'+ de 75',safadezas:'+ de 65',gym:'+ de 40'};
+  pack.count=counts[pack.id]||'+ de 60';
+});
 const packs=store.packs;
 const badges={premium:'Acervo completo',respostas:'Mais vendido',safadezas:'Ousado',trabalho:'Popular agora',eleicoes:'Em alta',kpop:'Favorito',futebol:'Paixão nacional','divas-pop':'Icônico',gym:'Oferta',anime:'Otaku','league-of-legends':'Gamer',cantadas:'Para o crush'};
 const headlines={

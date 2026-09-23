@@ -2,6 +2,7 @@
 // Os preços vigentes ficam centralizados no bloco currentPrices ao final.
 // A ordem abaixo foi pensada para separar visualmente packs de cores parecidas.
 window.STORE = {
+  campaign: "principal",
   socials: {
     email: "mailto:texugodasfigs@gmail.com",
     instagram: "https://www.instagram.com/texugodasfigs/",
@@ -24,27 +25,45 @@ window.STORE = {
   ]
 };
 
-// Preços exibidos na loja. Gym e Eleições mantêm seus valores promocionais próprios.
+// Preços e quantidades exibidos na loja.
 const currentPrices = {
-  premium: 11.99,
-  respostas: 5.99,
-  safadezas: 5.99,
-  trabalho: 5.99,
-  eleicoes: 4.99,
-  kpop: 5.99,
-  futebol: 5.99,
-  "divas-pop": 5.99,
-  gym: 2.50,
-  anime: 5.99,
-  cantadas: 5.99,
-  "league-of-legends": 5.99
+  premium: 19.90,
+  respostas: 9.90,
+  safadezas: 9.90,
+  trabalho: 9.90,
+  eleicoes: 9.90,
+  kpop: 9.90,
+  futebol: 9.90,
+  "divas-pop": 9.90,
+  gym: 9.90,
+  anime: 9.90,
+  cantadas: 9.90,
+  "league-of-legends": 9.90
+};
+
+const currentCounts = {
+  premium: "+ de 700",
+  respostas: "+ de 100",
+  safadezas: "+ de 75",
+  trabalho: "+ de 60",
+  eleicoes: "+ de 60",
+  kpop: "+ de 60",
+  futebol: "+ de 60",
+  "divas-pop": "+ de 60",
+  gym: "+ de 40",
+  anime: "+ de 60",
+  cantadas: "+ de 60",
+  "league-of-legends": "+ de 60"
 };
 
 window.STORE.packs.forEach(pack => {
   pack.price = currentPrices[pack.id];
+  pack.count = currentCounts[pack.id];
   if (pack.id === "premium") {
-    pack.count = "Todos os packs";
     pack.description = "Um único pagamento que dá direito a escolher todos os packs que quiser da loja — inclusive os temas mais nichados.";
     pack.longDescription = "Com o Premium Pack, você não precisa escolher apenas um tema: pelo valor único do Premium, você tem direito a solicitar todos os packs que quiser disponíveis no site. Depois do pagamento, use o botão de atendimento para abrir a conversa no WhatsApp. Você monta sua coleção com humor, reações, futebol, anime, trabalho, fandoms e outros nichos sem pagar separadamente por cada pack.";
   }
 });
+
+// Total real após Respostas passar a 107 e Safadezas a 78.
+window.STORE.stickerTotal = 705;

@@ -13,6 +13,6 @@ Esta pasta é a versão principal do site, preparada para o endereço:
 - Safadezas exibido com mais de 75 figurinhas (78 no acervo).
 - Capas configuradas para aparecer inteiras no catálogo, nos detalhes, no Premium e no carrinho.
 
-## Única pendência antes de publicar
+## Links de pagamento
 
-Substituir em `data.js` os 12 endereços do campo `payment` pelos links definitivos do Mercado Pago desta versão. Não publicar antes dessa troca.
+Os 12 endereços atuais do Mercado Pago foram mantidos conforme solicitado. A troca manual desses links pode ser feita posteriormente em `data.js`, sem alterar o endereço público do site.

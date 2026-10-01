@@ -45,6 +45,14 @@ body.purchase-open{overflow:hidden}
 @media(max-width:750px){.purchase-info-action{align-items:stretch;flex-direction:column;text-align:center}.purchase-info-action .button{width:100%}}
 @media(max-width:650px){.purchase-flow{padding:10px}.purchase-dialog{border-radius:20px;padding:24px 18px}.purchase-dialog-actions{grid-template-columns:1fr}.purchase-selected{align-items:flex-start;flex-direction:column}}
 
+/* Compra direta: Mercado Pago, Pix ou atendimento no WhatsApp */
+.payment-options{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin-top:24px}
+.payment-option{display:flex;align-items:flex-start;gap:14px;min-width:0;padding:20px;border:1px solid var(--line);border-radius:16px;background:#06100c}
+.payment-option-number{flex:0 0 34px;width:34px;height:34px;display:grid;place-items:center;border-radius:50%;background:var(--green2);color:#02130e;font-size:.72rem;font-weight:900}
+.payment-option>div{min-width:0;display:grid;align-content:start;gap:10px}.payment-option b{font:800 1.05rem Archivo}.payment-option p{margin:0;color:var(--muted);font-size:.78rem;line-height:1.55}.payment-option .text-link{color:var(--green2);font-size:.78rem;font-weight:800}.payment-option-actions{display:flex;flex-wrap:wrap;gap:8px}.payment-option-actions .button,.payment-option>.button{padding:11px 13px;font-size:.73rem}.payment-option small{color:#c8d4cf;font-size:.69rem;line-height:1.45}.pix-key{display:block;margin-top:4px;color:#fff;overflow-wrap:anywhere;font-size:.88rem}.pix-option{border-color:#18ad7866;background:linear-gradient(145deg,#071a13,#06100c)}
+@media(max-width:1050px){.payment-options{grid-template-columns:1fr 1fr}.pix-option{grid-column:span 2}}
+@media(max-width:650px){.payment-options{grid-template-columns:1fr}.pix-option{grid-column:auto}.payment-option{padding:17px}.payment-option-actions{display:grid}.payment-option-actions .button,.payment-option>.button{width:100%}}
+
 /* As capas novas são quadradas: preserve toda a arte e mantenha o mesmo enquadramento em cada uso. */
 body{overflow-x:hidden}
 .pack-cover{aspect-ratio:1;background:#050907}

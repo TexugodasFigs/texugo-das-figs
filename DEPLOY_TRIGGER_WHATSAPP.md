@@ -1,7 +1,6 @@
 Trigger deploy to refresh GitHub Pages and confirm WhatsApp number update.
 
-Old number: 5588988181514
-New number: 5588992367356
+Business WhatsApp used by the storefront: 5588992367356
 
 Timestamp: 2026-08-18T00:00:00Z
 

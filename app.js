@@ -33,6 +33,7 @@ const whatsappPackReceiptUrl=packName=>whatsappUrl(`Olá, Texugo das Figs! Compr
 const whatsappPostPaymentUrl=()=>whatsappUrl('Olá, Texugo das Figs! Adquiri um de seus packs.');
 const whatsappPixUrl=()=>whatsappUrl('Olá, Texugo das Figs! Efetuei o pagamento via Pix e gostaria de enviar o comprovante.');
 const whatsappBuyUrl=()=>whatsappUrl('Olá Texugo das Figs! gostaria de efetuar a compra de um dos seus packs via whatsapp.');
+const whatsappPackBuyUrl=packName=>whatsappUrl(`Olá Texugo das Figs! gostaria de efetuar a compra do ${packLabel(packName)} via whatsapp.`);
 const whatsappCustomUrl=()=>whatsappUrl('Olá, Texugo das Figs! Quero pedir um orçamento para um pack personalizado.');
 let activePack=packs[0].id;
 
@@ -78,8 +79,9 @@ function packCard(pack){
   return `<article class="pack-card" style="--accent:${pack.color}">
     <div class="pack-cover"><img src="${pack.image}" alt="Capa do pack ${pack.title}" loading="lazy"><span class="status-badge">${badges[pack.id]}</span>${pack.id==='safadezas'?'<span class="adult-badge">+18</span>':''}</div>
     <div class="pack-card-body"><div class="pack-meta"><span>${pack.category}</span><b>${pack.count} figurinhas</b></div><h3>${pack.title}</h3><p>${pack.description}</p>
-      <div class="pack-price"><strong>${money(pack.price)}</strong><a class="button primary mini" data-buy="${pack.id}" href="${pack.payment}" target="_blank" rel="noopener">Comprar no Mercado Pago ↗</a></div>
-      <small class="whatsapp-delivery-note">O botão Comprar leva direto ao pagamento.</small>
+      <div class="pack-price"><strong>${money(pack.price)}</strong></div>
+      <div class="pack-actions" aria-label="Comprar ${pack.title}"><a class="pack-action pack-action-primary" data-buy="${pack.id}" href="${pack.payment}" target="_blank" rel="noopener">Mercado Pago ↗</a><a class="pack-action pack-action-pix" data-pack-pix="${pack.id}" href="#pix-direto">Pix</a><a class="pack-action pack-action-whatsapp" href="${whatsappPackBuyUrl(pack.title)}" target="_blank" rel="noopener">WhatsApp</a></div>
+      <small class="whatsapp-delivery-note">Escolha Mercado Pago, Pix ou atendimento pelo WhatsApp.</small>
       <a class="whatsapp-text-link" href="${whatsappPackReceiptUrl(pack.title)}" target="_blank" rel="noopener">Já comprei — receber no WhatsApp ↗</a>
       <button class="details-button" data-select-pack="${pack.id}">Ver detalhes do pack <span>⌄</span></button>
     </div>
@@ -144,7 +146,7 @@ function renderDetail(id){
     <div class="detail-copy"><div class="detail-topline"><span>${pack.category}</span><span>Pagamento único</span></div><h3>${headlines[pack.id]}</h3><p>${pack.longDescription}</p>
       <div class="detail-preview-heading"><b>Veja algumas prévias</b><small>Espaços preparados para as imagens reais</small></div><div class="detail-preview-row">${[0,1,2,3,4].map(index=>previewTile(pack,index)).join('')}</div>
       <div class="detail-benefits"><span>✓ Figurinhas estáticas</span><span>✓ Figurinhas animadas</span><span>✓ Acesso vitalício</span><span>✓ ${pack.count} figurinhas</span></div>
-      <div class="detail-buy"><div><small>PACK COMPLETO POR</small><strong>${money(pack.price)}</strong><em>Entrega pelo WhatsApp</em><a class="whatsapp-text-link" href="${whatsappPackReceiptUrl(pack.title)}" target="_blank" rel="noopener">Já comprei — receber no WhatsApp ↗</a></div><a class="button primary" data-buy="${pack.id}" href="${pack.payment}" target="_blank" rel="noopener">Comprar no Mercado Pago ↗</a></div>
+      <div class="detail-buy"><div><small>PACK COMPLETO POR</small><strong>${money(pack.price)}</strong><em>Entrega pelo WhatsApp</em><a class="whatsapp-text-link" href="${whatsappPackReceiptUrl(pack.title)}" target="_blank" rel="noopener">Já comprei — receber no WhatsApp ↗</a></div><div class="detail-buy-actions"><a class="button primary" data-buy="${pack.id}" href="${pack.payment}" target="_blank" rel="noopener">Mercado Pago ↗</a><a class="button ghost" data-pack-pix="${pack.id}" href="#pix-direto">Pix</a><a class="button whatsapp-button" href="${whatsappPackBuyUrl(pack.title)}" target="_blank" rel="noopener">WhatsApp</a></div></div>
     </div>`;
   watchPreviewMedia(root);
 }
@@ -166,8 +168,9 @@ function setupBuyLinks(){
 }
 
 document.addEventListener('click',event=>{
-  const selector=event.target.closest('[data-select-pack]'),tab=event.target.closest('[data-detail-tab]'),buyButton=event.target.closest('[data-buy]');
+  const selector=event.target.closest('[data-select-pack]'),tab=event.target.closest('[data-detail-tab]'),buyButton=event.target.closest('[data-buy]'),pixButton=event.target.closest('[data-pack-pix]');
   if(selector)selectPack(selector.dataset.selectPack,true);if(tab)selectPack(tab.dataset.detailTab,false);if(buyButton)buy(buyButton.dataset.buy);
+  if(pixButton){const pack=store.packs.find(item=>item.id===pixButton.dataset.packPix);if(pack){saveLastPack(pack);copyPixKey(document.querySelector('[data-copy-status]'),pack.title)}}
 });
 document.querySelectorAll('[data-social]').forEach(link=>{link.href=store.socials[link.dataset.social];link.target='_blank';link.rel='noopener'});
 document.querySelectorAll('[data-whatsapp-post-payment]').forEach(link=>{link.href=whatsappPostPaymentUrl();link.target='_blank';link.rel='noopener'});
@@ -175,13 +178,14 @@ document.querySelectorAll('[data-whatsapp-premium]').forEach(link=>{link.href=wh
 document.querySelectorAll('[data-whatsapp-pix]').forEach(link=>{link.href=whatsappPixUrl();link.target='_blank';link.rel='noopener'});
 document.querySelectorAll('[data-whatsapp-buy]').forEach(link=>{link.href=whatsappBuyUrl();link.target='_blank';link.rel='noopener'});
 document.querySelectorAll('[data-whatsapp-custom]').forEach(link=>{link.href=whatsappCustomUrl();link.target='_blank';link.rel='noopener'});
-document.querySelectorAll('[data-copy-pix]').forEach(button=>button.addEventListener('click',()=>{
-  const status=document.querySelector('[data-copy-status]');
+function copyPixKey(status,packTitle=''){
   const field=document.createElement('textarea');
   field.value=pixKey;field.setAttribute('readonly','');field.style.cssText='position:fixed;opacity:0;pointer-events:none';
   document.body.append(field);field.select();
   let copied=false;try{copied=document.execCommand('copy')}catch{}field.remove();
-  if(status)status.textContent=copied?'Chave Pix copiada!':`Copie a chave: ${pixKey}`;
-  if(navigator.clipboard?.writeText)navigator.clipboard.writeText(pixKey).then(()=>{if(status)status.textContent='Chave Pix copiada!'}).catch(()=>{});
-}));
+  const successMessage=packTitle?`Chave Pix copiada para comprar ${packLabel(packTitle)}. Após pagar, envie o comprovante.`:'Chave Pix copiada!';
+  if(status)status.textContent=copied?successMessage:`Copie a chave: ${pixKey}`;
+  if(navigator.clipboard?.writeText)navigator.clipboard.writeText(pixKey).then(()=>{if(status)status.textContent=successMessage}).catch(()=>{});
+}
+document.querySelectorAll('[data-copy-pix]').forEach(button=>button.addEventListener('click',()=>copyPixKey(document.querySelector('[data-copy-status]'))));
 renderHomePreviews();setupPreviewRotation();setupViewportAnimations();setupCatalog();setupDetails();setupBuyLinks();

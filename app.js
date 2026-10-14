@@ -1,4 +1,4 @@
-import {storeParams,routePath,toStoreUrl,localizeCatalog,showcaseApi} from './github-runtime.js';
+import {storeParams,routePath,toStoreUrl,localizeCatalog,showcaseApi} from './github-runtime.js?v=a960bde332ea';
 const main = document.querySelector('#main');
 const params = storeParams;
 let origin = params.get('origem') === 'uehara' ? 'uehara' : 'principal';

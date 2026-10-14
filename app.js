@@ -18,6 +18,22 @@ function updateOrigin(value) {
   document.querySelector('#previews-link').href = `/?origem=${origin}#previas`;
 }
 async function api(path, options={}) {return showcaseApi(path,{...options,headers:{'Content-Type':'application/json',...options.headers}});}
+function homepagePreviews(packs) {
+  // Pairs stay together; alternate collections between these intentional pairs.
+  const selection = [
+    ['respostas','rp03'], ['safadezas','sf3'],
+    ['respostas','rp02'], ['respostas','rp01'],
+    ['safadezas','sf1'], ['anime','anm03'],
+    ['respostas','rp07'], ['respostas','rp06'],
+    ['safadezas','sf2'], ['anime','anm04'],
+    ['safadezas','sf5'], ['safadezas','sf6']
+  ];
+  return selection.map(([id,clip]) => {
+    const pack=packs.find(p=>p.id===id);
+    const path=pack?.previews.find(path=>path.endsWith(`/${clip}-20261013.mp4`));
+    return path?{pack,path}:null;
+  }).filter(Boolean);
+}
 function startPreviewMarquee(rail) {
   const reduced=matchMedia('(prefers-reduced-motion: reduce)');
   if(reduced.matches)return;
@@ -38,7 +54,7 @@ function startPreviewMarquee(rail) {
     const elapsed=last?Math.min(now-last,50):0;last=now;
     if(visible&&!document.hidden&&!reduced.matches&&!manualPaused&&!hovering&&!focused&&now>pauseUntil&&!document.querySelector('dialog[open]')){
       const distance=rail.children[originals.length].offsetLeft-rail.children[0].offsetLeft;
-      if(distance>0){position=(position+elapsed*0.028)%distance;rail.scrollLeft=position;}
+      if(distance>0){position=(position+elapsed*0.052)%distance;rail.scrollLeft=position;}
     }else position=rail.scrollLeft;
     requestAnimationFrame(frame);
   }
@@ -99,7 +115,7 @@ else {
   dialog.addEventListener('close',()=>{dialog.querySelectorAll('video').forEach(v=>v.pause());document.body.classList.remove('preview-open');});
   shop();
   function shop() {
-    main.innerHTML = `<section class="hero"><div><span class="eyebrow">A loja do Texugo</span><h1>Sua conversa merece <em>figurinhas incríveis.</em></h1><p>Humor, memes, anime e figurinhas de todos os temas para seu WhatsApp.</p><div class="hero-proof"><div class="hero-icons" aria-hidden="true"><span><svg viewBox="0 0 24 24"><path d="M12 3a9 9 0 0 0-8 13l-1 5 5-2a9 9 0 1 0 4-16Z"/><circle cx="8" cy="11" r="1"/><circle cx="12" cy="11" r="1"/><circle cx="16" cy="11" r="1"/></svg></span><span><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><circle cx="9" cy="9" r="1"/><circle cx="15" cy="9" r="1"/><path d="M8 14h8c-1 5-7 5-8 0Z"/></svg></span><span><svg viewBox="0 0 24 24"><path d="m14 2-9 12h6l-1 8 9-13h-6l1-7Z"/></svg></span></div><div><strong>+ de ${catalogData.total} figurinhas</strong><small>prontas para usar</small></div></div></div><div class="hero-art"><img src="./media/logo-principal.jpeg" alt="Logo original Texugo das Figs" width="1600" height="874"></div></section>
+    main.innerHTML = `<section class="hero"><div><span class="eyebrow">A loja do Texugo</span><h1>Sua conversa merece <em>figurinhas incríveis.</em></h1><p>Humor, memes, anime e figurinhas de todos os temas para seu WhatsApp.</p><div class="hero-proof"><div class="hero-icons" aria-hidden="true"><span><svg viewBox="0 0 24 24"><path d="M12 3a9 9 0 0 0-8 13l-1 5 5-2a9 9 0 1 0 4-16Z"/><circle cx="8" cy="11" r="1"/><circle cx="12" cy="11" r="1"/><circle cx="16" cy="11" r="1"/></svg></span><span><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><circle cx="9" cy="9" r="1"/><circle cx="15" cy="9" r="1"/><path d="M8 14h8c-1 5-7 5-8 0Z"/></svg></span><span><svg viewBox="0 0 24 24"><path d="m14 2-9 12h6l-1 8 9-13h-6l1-7Z"/></svg></span></div><div><strong>+ de ${catalogData.total} figurinhas</strong><small>prontas para usar</small></div></div></div><div class="hero-art"><img src="./media/logo-recortada-20261014.png" alt="Logo original Texugo das Figs" width="1354" height="1161"></div></section>
     <section id="packs"><div class="section-head"><div><span class="eyebrow">Escolha pela sua vibe</span><h2>Um pack para cada momento.</h2></div><input class="search" id="search" type="search" placeholder="Buscar um pack…" aria-label="Buscar packs"></div><div class="filters" aria-label="Filtrar packs">${[['all','Todos'],['humor','Humor'],['fandoms','Fandoms'],['games','Games'],['esportes','Esportes'],['lifestyle','Dia a dia']].map(([id,label])=>`<button class="filter" data-category="${id}" aria-pressed="${id==='all'}">${label}</button>`).join('')}</div><div class="grid" id="grid"></div></section>
     <section class="premium-promo" aria-label="Promoção Premium"><div><span class="eyebrow">Mais figurinhas. Melhor custo-benefício.</span><h2>Todos os 10 packs. Uma única compra.</h2><p><strong>+ de ${catalogData.total} figurinhas</strong> para responder, rir e entrar na resenha. Acesso vitalício aos packs atuais, sem mensalidade.</p></div><div class="premium-promo-buy"><strong>${money(1990)}</strong><a class="button" href="${checkoutUrl('premium')}">Quero o Premium</a></div></section>
     <div class="benefits"><span>Pagamento único</span><span>Pix ou cartão no checkout</span><span>Acesso após confirmação</span><span>Recuperação por e-mail</span></div>
@@ -107,7 +123,7 @@ else {
     <section class="faq"><h2>Antes de mandar a primeira figurinha.</h2><details><summary>O que recebo no Premium?</summary><p>Acesso aos 10 packs atuais. Esta compra não promete lançamentos futuros. O acervo anunciado possui 705 figurinhas.</p></details><details><summary>K-Pop e Divas Pop são um único pack?</summary><p>Sim. As duas coleções estão reunidas no pack K-Pop e Divas Pop, com uma única compra e um único canal.</p></details><details><summary>Preciso falar no WhatsApp para receber?</summary><p>Não para compras aprovadas neste checkout. Os botões aparecem na página de entrega e o acesso é enviado por e-mail. O WhatsApp fica disponível para dúvidas.</p></details><details><summary>Fechei a página. Como recupero?</summary><p>Guarde o e-mail enviado após a confirmação. Você também pode solicitar um novo acesso em “Meus acessos”, usando o mesmo e-mail da compra.</p></details><details><summary>Posso compartilhar meu acesso?</summary><p>O link da sua compra é pessoal. Não compartilhe. Os conteúdos ficam em canais do WhatsApp; esse formato não oferece bloqueio absoluto contra repasse de links.</p></details></section>`;
     const showcase=document.createElement('section');showcase.id='previas';showcase.className='preview-showcase';
     document.querySelector('.faq details p').textContent=`Acesso aos 10 packs atuais, com ${catalogData.total} figurinhas no acervo anunciado. Esta compra não promete lançamentos futuros.`;
-    showcase.innerHTML=`<div class="section-head"><div><span class="eyebrow">Vitrine Texugo</span><h2>Escolha pela prévia.</h2></div><p>Clique para explorar as figurinhas de cada pack.</p></div><div class="preview-rail">${catalogData.packs.filter(p=>p.id!=='premium').map(p=>`<button class="preview-tile" data-preview="${p.id}" style="--accent:${p.color}" aria-label="Ver prévias de ${esc(p.title)}">${mediaMarkup(p.featuredPreview,`Figurinha de ${p.title}`,true)}<span>${esc(p.title)}${p.adult?' · +18':''}</span></button>`).join('')}</div>`;
+    showcase.innerHTML=`<div class="section-head"><div><span class="eyebrow">Vitrine Texugo</span><h2>Escolha pela prévia.</h2></div><p>Clique para explorar as figurinhas de cada pack.</p></div><div class="preview-rail">${homepagePreviews(catalogData.packs).map(({pack:p,path})=>`<button class="preview-tile" data-preview="${p.id}" style="--accent:${p.color}" aria-label="Ver prévias de ${esc(p.title)}">${mediaMarkup(path,`Figurinha de ${p.title}`,true)}<span>${esc(p.title)}${p.adult?' · +18':''}</span></button>`).join('')}</div>`;
     document.querySelector('#packs').before(showcase);
     startPreviewMarquee(showcase.querySelector('.preview-rail'));
     document.querySelector('.steps').insertAdjacentHTML('beforebegin',securePurchaseNotice());

@@ -1,4 +1,4 @@
-import {storeParams,routePath,toStoreUrl,localizeCatalog,showcaseApi} from './github-runtime.js?v=a960bde332ea';
+import {storeParams,routePath,toStoreUrl,localizeCatalog,showcaseApi} from './github-runtime.js?v=569361c23533';
 const main = document.querySelector('#main');
 const params = storeParams;
 let origin = params.get('origem') === 'uehara' ? 'uehara' : 'principal';
@@ -18,6 +18,32 @@ function updateOrigin(value) {
   document.querySelector('#previews-link').href = `/?origem=${origin}#previas`;
 }
 async function api(path, options={}) {return showcaseApi(path,{...options,headers:{'Content-Type':'application/json',...options.headers}});}
+function startPreviewMarquee(rail) {
+  const reduced=matchMedia('(prefers-reduced-motion: reduce)');
+  if(reduced.matches)return;
+  const originals=[...rail.children];
+  for(const tile of originals){const clone=tile.cloneNode(true);clone.setAttribute('aria-hidden','true');clone.tabIndex=-1;rail.append(clone);}
+  let hovering=false,focused=false,manualPaused=false,pauseUntil=0,last=0,position=0,visible=true;
+  const toggle=document.createElement('button');toggle.type='button';toggle.className='rail-toggle';toggle.textContent='Pausar prévias';toggle.setAttribute('aria-pressed','false');
+  rail.closest('section').querySelector('.section-head').append(toggle);
+  toggle.addEventListener('click',()=>{manualPaused=!manualPaused;toggle.textContent=manualPaused?'Retomar prévias':'Pausar prévias';toggle.setAttribute('aria-pressed',String(manualPaused));});
+  const pause=()=>{pauseUntil=performance.now()+3500;position=rail.scrollLeft;};
+  rail.addEventListener('pointerenter',()=>{if(matchMedia('(hover: hover)').matches)hovering=true;});
+  rail.addEventListener('pointerleave',()=>{hovering=false;});
+  rail.addEventListener('focusin',()=>{focused=true;});
+  rail.addEventListener('focusout',()=>{focused=rail.contains(document.activeElement);});
+  for(const name of ['pointerdown','touchstart','wheel','keydown'])rail.addEventListener(name,pause,{passive:true});
+  new IntersectionObserver(entries=>{visible=entries[0].isIntersecting;},{threshold:0}).observe(rail);
+  function frame(now){
+    const elapsed=last?Math.min(now-last,50):0;last=now;
+    if(visible&&!document.hidden&&!reduced.matches&&!manualPaused&&!hovering&&!focused&&now>pauseUntil&&!document.querySelector('dialog[open]')){
+      const distance=rail.children[originals.length].offsetLeft-rail.children[0].offsetLeft;
+      if(distance>0){position=(position+elapsed*0.028)%distance;rail.scrollLeft=position;}
+    }else position=rail.scrollLeft;
+    requestAnimationFrame(frame);
+  }
+  requestAnimationFrame(frame);
+}
 const catalogData = localizeCatalog(await api('/api/catalog').catch(()=>null));
 // First-party counts only: daily session IDs, no IP, fingerprint or personal URLs.
 if(catalogData && ['/', '/checkout'].includes(routePath) && navigator.doNotTrack!=='1' && !navigator.globalPrivacyControl) {
@@ -73,16 +99,17 @@ else {
   dialog.addEventListener('close',()=>{dialog.querySelectorAll('video').forEach(v=>v.pause());document.body.classList.remove('preview-open');});
   shop();
   function shop() {
-    main.innerHTML = `<section class="hero"><div><span class="eyebrow">A loja do Texugo · Figurinhas para seu WhatsApp</span><h1>Sua conversa merece<br><em>uma boa figurinha.</em></h1><p>Escolha um pacote de figurinhas por <strong>${money(990)}</strong> ou leve os <strong>10 pacotes no Premium por ${money(1990)}</strong>. Pagou, confirmou, acessou: seus canais são liberados no site e o link chega por e-mail.</p><h2 class="pack-list-title">Lista de pacotes</h2><nav class="pack-topics" aria-label="Ir direto a um pack"><ul>${catalogData.packs.map(p=>`<li><a href="#pack-${p.id}" data-pack-topic="${p.id}"><strong>${esc(p.title)}</strong></a></li>`).join('')}</ul></nav><div class="hero-stats" aria-label="Resumo do acervo"><div><strong>+ de ${catalogData.total}</strong><span>figurinhas no Premium</span></div><div><strong>10 pacotes</strong><span>temas para todas as conversas</span></div><div><strong>Vitalício</strong><span>acesso · pagamento único</span></div></div><div class="hero-actions"><a class="button" href="#packs">Escolher meu pack</a><a class="button secondary" href="#previas">Ver as figurinhas</a></div></div><div class="hero-art"><img src="./media/logo-principal.jpeg" alt="Logo original Texugo das Figs" width="1600" height="874"></div></section>
+    main.innerHTML = `<section class="hero"><div><span class="eyebrow">A loja do Texugo</span><h1>Sua conversa merece <em>figurinhas incríveis.</em></h1><p>Humor, memes, anime e figurinhas de todos os temas para seu WhatsApp.</p><div class="hero-proof"><div class="hero-icons" aria-hidden="true"><span><svg viewBox="0 0 24 24"><path d="M12 3a9 9 0 0 0-8 13l-1 5 5-2a9 9 0 1 0 4-16Z"/><circle cx="8" cy="11" r="1"/><circle cx="12" cy="11" r="1"/><circle cx="16" cy="11" r="1"/></svg></span><span><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><circle cx="9" cy="9" r="1"/><circle cx="15" cy="9" r="1"/><path d="M8 14h8c-1 5-7 5-8 0Z"/></svg></span><span><svg viewBox="0 0 24 24"><path d="m14 2-9 12h6l-1 8 9-13h-6l1-7Z"/></svg></span></div><div><strong>+ de ${catalogData.total} figurinhas</strong><small>prontas para usar</small></div></div></div><div class="hero-art"><img src="./media/logo-principal.jpeg" alt="Logo original Texugo das Figs" width="1600" height="874"></div></section>
+    <section id="packs"><div class="section-head"><div><span class="eyebrow">Escolha pela sua vibe</span><h2>Um pack para cada momento.</h2></div><input class="search" id="search" type="search" placeholder="Buscar um pack…" aria-label="Buscar packs"></div><div class="filters" aria-label="Filtrar packs">${[['all','Todos'],['humor','Humor'],['fandoms','Fandoms'],['games','Games'],['esportes','Esportes'],['lifestyle','Dia a dia']].map(([id,label])=>`<button class="filter" data-category="${id}" aria-pressed="${id==='all'}">${label}</button>`).join('')}</div><div class="grid" id="grid"></div></section>
     <section class="premium-promo" aria-label="Promoção Premium"><div><span class="eyebrow">Mais figurinhas. Melhor custo-benefício.</span><h2>Todos os 10 packs. Uma única compra.</h2><p><strong>+ de ${catalogData.total} figurinhas</strong> para responder, rir e entrar na resenha. Acesso vitalício aos packs atuais, sem mensalidade.</p></div><div class="premium-promo-buy"><strong>${money(1990)}</strong><a class="button" href="${checkoutUrl('premium')}">Quero o Premium</a></div></section>
     <div class="benefits"><span>Pagamento único</span><span>Pix ou cartão no checkout</span><span>Acesso após confirmação</span><span>Recuperação por e-mail</span></div>
-    <section id="packs"><div class="section-head"><div><span class="eyebrow">Escolha pela sua vibe</span><h2>Um pack para cada momento.</h2></div><input class="search" id="search" type="search" placeholder="Buscar um pack…" aria-label="Buscar packs"></div><div class="filters" aria-label="Filtrar packs">${[['all','Todos'],['humor','Humor'],['fandoms','Fandoms'],['games','Games'],['esportes','Esportes'],['lifestyle','Dia a dia']].map(([id,label])=>`<button class="filter" data-category="${id}" aria-pressed="${id==='all'}">${label}</button>`).join('')}</div><div class="grid" id="grid"></div></section>
     <section class="steps"><h2>Da compra ao seu WhatsApp, sem complicação.</h2><div class="step-grid"><div><span>01 · ESCOLHA</span><b>Encontre sua coleção</b><p>Avulso por R$ 9,90 ou todos os packs atuais no Premium por R$ 19,90.</p></div><div><span>02 · PAGUE</span><b>Informe seu e-mail e pague</b><p>Finalize no checkout do Mercado Pago. Não é preciso enviar comprovante nesse fluxo.</p></div><div><span>03 · ACESSE</span><b>Abra seus packs</b><p>Após a confirmação, os botões dos canais ficam disponíveis. Guarde também o e-mail de acesso.</p></div></div></section>
     <section class="faq"><h2>Antes de mandar a primeira figurinha.</h2><details><summary>O que recebo no Premium?</summary><p>Acesso aos 10 packs atuais. Esta compra não promete lançamentos futuros. O acervo anunciado possui 705 figurinhas.</p></details><details><summary>K-Pop e Divas Pop são um único pack?</summary><p>Sim. As duas coleções estão reunidas no pack K-Pop e Divas Pop, com uma única compra e um único canal.</p></details><details><summary>Preciso falar no WhatsApp para receber?</summary><p>Não para compras aprovadas neste checkout. Os botões aparecem na página de entrega e o acesso é enviado por e-mail. O WhatsApp fica disponível para dúvidas.</p></details><details><summary>Fechei a página. Como recupero?</summary><p>Guarde o e-mail enviado após a confirmação. Você também pode solicitar um novo acesso em “Meus acessos”, usando o mesmo e-mail da compra.</p></details><details><summary>Posso compartilhar meu acesso?</summary><p>O link da sua compra é pessoal. Não compartilhe. Os conteúdos ficam em canais do WhatsApp; esse formato não oferece bloqueio absoluto contra repasse de links.</p></details></section>`;
     const showcase=document.createElement('section');showcase.id='previas';showcase.className='preview-showcase';
     document.querySelector('.faq details p').textContent=`Acesso aos 10 packs atuais, com ${catalogData.total} figurinhas no acervo anunciado. Esta compra não promete lançamentos futuros.`;
     showcase.innerHTML=`<div class="section-head"><div><span class="eyebrow">Vitrine Texugo</span><h2>Escolha pela prévia.</h2></div><p>Clique para explorar as figurinhas de cada pack.</p></div><div class="preview-rail">${catalogData.packs.filter(p=>p.id!=='premium').map(p=>`<button class="preview-tile" data-preview="${p.id}" style="--accent:${p.color}" aria-label="Ver prévias de ${esc(p.title)}">${mediaMarkup(p.featuredPreview,`Figurinha de ${p.title}`,true)}<span>${esc(p.title)}${p.adult?' · +18':''}</span></button>`).join('')}</div>`;
     document.querySelector('#packs').before(showcase);
+    startPreviewMarquee(showcase.querySelector('.preview-rail'));
     document.querySelector('.steps').insertAdjacentHTML('beforebegin',securePurchaseNotice());
     document.querySelector('.steps').insertAdjacentHTML('beforebegin',purchaseConditions());
     showcase.querySelectorAll('video[data-src]').forEach(video=>previewObserver.observe(video));
@@ -99,14 +126,5 @@ else {
       draw();
     }));
     draw();
-    document.querySelectorAll('[data-pack-topic]').forEach(link=>link.addEventListener('click',event=>{
-      event.preventDefault();
-      category='all';document.querySelector('#search').value='';
-      document.querySelectorAll('[data-category]').forEach(button=>button.setAttribute('aria-pressed',String(button.dataset.category==='all')));
-      draw();
-      const target=document.getElementById(`pack-${link.dataset.packTopic}`);
-      history.replaceState(null,'',`#${target.id}`);
-      target.focus({preventScroll:true});target.scrollIntoView({behavior:matchMedia('(prefers-reduced-motion: reduce)').matches?'auto':'smooth',block:'start'});
-    }));
   }
 }

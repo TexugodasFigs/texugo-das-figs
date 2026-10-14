@@ -23,6 +23,12 @@ const catalogData = localizeCatalog(await api('/api/catalog').catch(()=>null));
 if(catalogData && ['/', '/checkout'].includes(routePath) && navigator.doNotTrack!=='1' && !navigator.globalPrivacyControl) {
   try {
     let session=sessionStorage.getItem('texugo-visit');
+    // Carry only the anonymous visit ID from the static showcase, never in query/logs.
+    const incomingVisit=new URLSearchParams(location.hash.slice(1)).get('visita');
+    if(routePath==='/checkout'&&/^[a-f0-9]{8}-[a-f0-9]{4}-4[a-f0-9]{3}-[89ab][a-f0-9]{3}-[a-f0-9]{12}$/i.test(incomingVisit||'')){
+      session=incomingVisit;sessionStorage.setItem('texugo-visit',session);
+      history.replaceState(null,'',routePath+location.search);
+    }
     if(!session){session=crypto.randomUUID();sessionStorage.setItem('texugo-visit',session);}
     void api('/api/visits',{method:'POST',body:JSON.stringify({session,origin,page:routePath==='/'?'home':'checkout'})}).catch(()=>{});
   } catch { /* Metrics never block checkout. */ }

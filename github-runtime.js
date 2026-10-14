@@ -14,6 +14,7 @@ export function toStoreUrl(value){
  }
  if(['/checkout','/recuperar','/condicoes','/privacidade','/atendimento'].includes(url.pathname)||url.pathname.startsWith('/pedido/')){
   if(!url.searchParams.has('origem'))url.searchParams.set('origem',storeParams.get('origem'));
+  if(url.pathname==='/checkout')try{const session=sessionStorage.getItem('texugo-visit');if(/^[a-f0-9-]{36}$/i.test(session||''))url.hash=new URLSearchParams({visita:session}).toString();}catch{}
   return url.href;
  }
  return value;

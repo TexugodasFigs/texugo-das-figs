@@ -1,4 +1,5 @@
-import {storeParams,routePath,toStoreUrl,localizeCatalog,showcaseApi} from './github-runtime.js?v=569361c23533';
+import {storeParams,routePath,toStoreUrl,localizeCatalog,showcaseApi} from './github-runtime.js?v=8e97f07349bc';
+import {trafficSource,withTrafficSource} from './traffic-source.js';
 const main = document.querySelector('#main');
 const params = storeParams;
 let origin = params.get('origem') === 'uehara' ? 'uehara' : 'principal';
@@ -72,16 +73,16 @@ if(catalogData && ['/', '/checkout'].includes(routePath) && navigator.doNotTrack
       history.replaceState(null,'',routePath+location.search);
     }
     if(!session){session=crypto.randomUUID();sessionStorage.setItem('texugo-visit',session);}
-    void api('/api/visits',{method:'POST',body:JSON.stringify({session,origin,page:routePath==='/'?'home':'checkout'})}).catch(()=>{});
+    void api('/api/visits',{method:'POST',body:JSON.stringify({session,origin,trafficSource:trafficSource(),page:routePath==='/'?'home':'checkout'})}).catch(()=>{});
   } catch { /* Metrics never block checkout. */ }
 }
 if (!catalogData) { main.innerHTML = '<p class="error">Não foi possível carregar a loja. Atualize a página para tentar novamente.</p>'; }
 else {
   document.querySelector('#demo-banner').hidden = catalogData.mode === 'production';
   if(catalogData.mode==='sandbox')document.querySelector('#demo-banner').textContent='HOMOLOGAÇÃO · Use apenas conta e cartão de TESTE. Nenhuma compra real. Canais reais não são liberados aqui.';
-  const checkoutUrl = id => `/checkout?pack=${encodeURIComponent(id)}&origem=${origin}`;
-  const purchaseConditions = () => '<aside class="purchase-conditions" aria-label="Acesso e atendimento"><strong>Acesso vitalício às figurinhas</strong><p>Atendimento: todos os dias, das 9h às 22h (horário de Brasília).</p><details><summary>Sobre a recuperação do acesso</summary><p>O acesso vitalício é liberado após a confirmação do pagamento, sem mensalidade. No Pix, recupere seu acesso por e-mail em “Meus acessos”. No cartão, receba seu pacote pelo atendimento no WhatsApp, das 9h às 22h.</p></details></aside>';
-  const securePurchaseNotice = () => `<aside class="secure-purchase" aria-label="Compra segura"><span aria-hidden="true">✓</span><div><strong>Compra segura · Mercado Pago</strong><p>${catalogData.mode==='demo'?'Nesta prévia, pagamentos e e-mails são simulados. Nenhuma cobrança é realizada.':'Pagamento processado pelo Mercado Pago. Os dados do seu cartão não são armazenados na loja. No Pix, pague pelo aplicativo do seu banco e confira o valor e o destinatário antes de confirmar.'}</p><small>Pix: acesso automático por e-mail. Cartão: entrega pelo atendimento no WhatsApp após aprovação.</small></div></aside>`;
+  const checkoutUrl = id => withTrafficSource(`/checkout?pack=${encodeURIComponent(id)}&origem=${origin}`);
+  const purchaseConditions = () => '<aside class="purchase-conditions" aria-label="Acesso e atendimento"><strong>Acesso vitalício às figurinhas</strong><p>Atendimento: todos os dias, das 9h às 22h (horário de Brasília).</p><details><summary>Sobre a recuperação do acesso</summary><p>O acesso vitalício é liberado após a confirmação do pagamento, sem mensalidade. '+(true?'No cartão, receba atendimento e entrega pelo WhatsApp. No Pix, o acesso é automático e pode ser recuperado por e-mail em “Meus acessos”.':'Se o link pessoal expirar, recupere-o em “Meus acessos” usando o e-mail da compra sempre que precisar. O pagamento e a entrega automática podem funcionar fora do horário de atendimento.')+'</p></details></aside>';
+  const securePurchaseNotice = () => `<aside class="secure-purchase" aria-label="Compra segura"><span aria-hidden="true">✓</span><div><strong>Compra segura · Mercado Pago</strong><p>${catalogData.mode==='demo'?'Nesta prévia, pagamentos e e-mails são simulados. Nenhuma cobrança é realizada.':'Pagamento processado pelo Mercado Pago. Os dados do seu cartão não são armazenados na loja. No Pix, pague pelo aplicativo do seu banco e confira o valor e o destinatário antes de confirmar.'}</p><small>${true?'Pix: acesso automático por e-mail. Cartão: entrega pelo atendimento no WhatsApp após aprovação.':'Seu acesso é liberado após a confirmação do pagamento e também enviado por e-mail.'}</small></div></aside>`;
   const serviceUrl = pack => `https://wa.me/5588992367356?text=${encodeURIComponent(`Olá, Texugo das Figs! Gostaria de atendimento sobre o ${pack.id==='premium'?'Premium Pack':`pack ${pack.title}`}.`)}`;
   const mediaMarkup = (path, label, lazy=false) => path.endsWith('.mp4')
     ? `<video ${lazy?`data-src="${esc(path)}"`:`src="${esc(path)}" controls`} muted loop playsinline preload="none" aria-label="${esc(label)}"></video>`

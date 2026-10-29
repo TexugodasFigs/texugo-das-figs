@@ -1,4 +1,5 @@
 // Public static catalog and navigation. No customer records or delivery channels.
+import {trafficSource} from './traffic-source.js';
 export const backend="https://srv2056230.hstgr.cloud";
 export const storeParams=new URLSearchParams(location.search);
 storeParams.set('origem',"principal");
@@ -10,7 +11,7 @@ export function toStoreUrl(value){
  const url=new URL(value,backend);
  if(url.origin!==backend)return value;
  if(url.pathname==='/'){
-  const home=new URL(base);home.searchParams.set('origem',storeParams.get('origem'));home.hash=url.hash;return home.href;
+  const home=new URL(base);home.searchParams.set('origem',storeParams.get('origem'));if(trafficSource()!=='unknown')home.searchParams.set('canal',trafficSource());home.hash=url.hash;return home.href;
  }
  if(['/checkout','/recuperar','/condicoes','/privacidade','/atendimento'].includes(url.pathname)||url.pathname.startsWith('/pedido/')){
   if(!url.searchParams.has('origem'))url.searchParams.set('origem',storeParams.get('origem'));

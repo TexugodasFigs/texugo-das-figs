@@ -1,4 +1,4 @@
-import {storeParams,routePath,toStoreUrl,localizeCatalog,showcaseApi} from './github-runtime.js?v=8e97f07349bc';
+import {storeParams,routePath,toStoreUrl,localizeCatalog,showcaseApi} from './github-runtime.js?v=f31b4474d000';
 import {trafficSource,withTrafficSource} from './traffic-source.js';
 const main = document.querySelector('#main');
 const params = storeParams;
@@ -7,28 +7,6 @@ const esc = text => String(text).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;',
 const money = cents => (cents/100).toLocaleString('pt-BR',{style:'currency',currency:'BRL'});
 const home = `/?origem=${origin}`;
 
-function showAgeNotice() {
-  if(routePath!=='/')return;
-  try { if(sessionStorage.getItem('texugo-age-confirmed')==='yes')return; } catch {}
-  const notice=document.createElement('dialog');
-  notice.className='age-notice';
-  notice.setAttribute('aria-labelledby','age-notice-title');
-  notice.setAttribute('aria-describedby','age-notice-description');
-  notice.innerHTML='<span class="age-badge" aria-hidden="true">18+</span><h2 id="age-notice-title">Antes de continuar</h2><p id="age-notice-description">Algumas figurinhas podem conter humor adulto e conteúdo de duplo sentido, mas nada explícito. Confirme que você tem 18 anos ou mais para continuar.</p><button class="button full" id="age-continue" autofocus>Tenho 18 anos ou mais e quero continuar</button><button class="button secondary full" id="age-exit">Não tenho 18 anos</button>';
-  notice.addEventListener('cancel',event=>event.preventDefault());
-  document.body.append(notice);
-  document.body.classList.add('age-notice-open');
-  notice.querySelector('#age-continue').addEventListener('click',()=>{
-    try { sessionStorage.setItem('texugo-age-confirmed','yes'); } catch {}
-    notice.close();notice.remove();document.body.classList.remove('age-notice-open');main.focus();
-  });
-  notice.querySelector('#age-exit').addEventListener('click',()=>{
-    notice.innerHTML='<span class="age-badge" aria-hidden="true">18+</span><h2 id="age-notice-title" tabindex="-1">Acesso reservado a maiores de 18 anos</h2><p id="age-notice-description">Você pode fechar esta aba. Obrigado pela compreensão.</p>';
-    notice.querySelector('h2').focus();
-  });
-  notice.showModal();
-}
-showAgeNotice();
 document.querySelector('#home-link').href = home;
 document.querySelector('#catalog-link').href = `${home}#packs`;
 document.querySelector('#recover-link').href = `/recuperar?origem=${origin}`;
@@ -126,7 +104,7 @@ else {
     dialog.querySelectorAll('video').forEach(video=>video.pause());
     dialog.style.setProperty('--accent',previewPack.color);
     dialog.dataset.pack=previewPack.id;
-    dialog.innerHTML=`<div class="preview-head"><div><span class="eyebrow">Conheça as figurinhas${previewPack.adult?' · +18':''}</span><h2 id="preview-title">${esc(previewPack.title)}</h2></div><button class="preview-close" aria-label="Fechar prévias">×</button></div><p class="preview-description">${esc(previewPack.description)}</p><div class="preview-gallery" aria-label="Prévias de ${esc(previewPack.title)}">${items.slice(previewIndex,previewIndex+pageSize).map((path,i)=>`<figure><div class="preview-cell">${mediaMarkup(path,`Prévia ${previewIndex+i+1} de ${previewPack.title}`)}</div><figcaption>Prévia ${previewIndex+i+1}</figcaption></figure>`).join('')}</div><div class="preview-controls" ${pageCount===1?'hidden':''}><button class="button secondary" data-direction="-1" aria-label="Prévia anterior">Anterior</button><span aria-live="polite">Página ${page+1} de ${pageCount}</span><button class="button secondary" data-direction="1" aria-label="Próxima prévia">Próxima</button></div><p class="preview-gallery-note">${items.length} prévias disponíveis · até 6 por tela</p><details class="preview-about"><summary>Sobre este pack</summary><p>${esc(previewPack.longDescription)}</p></details><div class="preview-buy"><div><span class="count" style="color:${previewPack.color}">${esc(previewPack.count)} figurinhas</span><strong class="price">${money(previewPack.amountCents)}</strong></div><div class="preview-buy-actions"><a class="button" href="${checkoutUrl(previewPack.id)}">Comprar ${esc(previewPack.title)}</a><a class="button secondary service-button" href="${esc(serviceUrl(previewPack))}" target="_blank" rel="noopener noreferrer">Atendimento via WhatsApp</a></div></div>`;
+    dialog.innerHTML=`<div class="preview-head"><div><span class="eyebrow">Conheça as figurinhas</span><h2 id="preview-title">${esc(previewPack.title)}</h2></div><button class="preview-close" aria-label="Fechar prévias">×</button></div><p class="preview-description">${esc(previewPack.description)}</p><div class="preview-gallery" aria-label="Prévias de ${esc(previewPack.title)}">${items.slice(previewIndex,previewIndex+pageSize).map((path,i)=>`<figure><div class="preview-cell">${mediaMarkup(path,`Prévia ${previewIndex+i+1} de ${previewPack.title}`)}</div><figcaption>Prévia ${previewIndex+i+1}</figcaption></figure>`).join('')}</div><div class="preview-controls" ${pageCount===1?'hidden':''}><button class="button secondary" data-direction="-1" aria-label="Prévia anterior">Anterior</button><span aria-live="polite">Página ${page+1} de ${pageCount}</span><button class="button secondary" data-direction="1" aria-label="Próxima prévia">Próxima</button></div><p class="preview-gallery-note">${items.length} prévias disponíveis · até 6 por tela</p><details class="preview-about"><summary>Sobre este pack</summary><p>${esc(previewPack.longDescription)}</p></details><div class="preview-buy"><div><span class="count" style="color:${previewPack.color}">${esc(previewPack.count)} figurinhas</span><strong class="price">${money(previewPack.amountCents)}</strong></div><div class="preview-buy-actions"><a class="button" href="${checkoutUrl(previewPack.id)}">Comprar ${esc(previewPack.title)}</a><a class="button secondary service-button" href="${esc(serviceUrl(previewPack))}" target="_blank" rel="noopener noreferrer">Atendimento via WhatsApp</a></div></div>`;
     if(!matchMedia('(prefers-reduced-motion: reduce)').matches)dialog.querySelectorAll('video').forEach(video=>video.play().catch(()=>{}));
     dialog.querySelector('.preview-close').addEventListener('click',()=>dialog.close());
     dialog.querySelectorAll('[data-direction]').forEach(b=>b.addEventListener('click',()=>{previewIndex=((page+Number(b.dataset.direction)+pageCount)%pageCount)*pageSize;drawPreview();dialog.querySelector(`[data-direction="${b.dataset.direction}"]`).focus();}));
@@ -147,7 +125,7 @@ else {
     <section class="faq"><h2>Antes de mandar a primeira figurinha.</h2><details><summary>O que recebo no Premium?</summary><p>Acesso aos 10 packs atuais. Esta compra não promete lançamentos futuros. O acervo anunciado possui ${catalogData.total} figurinhas.</p></details><details><summary>K-Pop e Divas Pop são um único pack?</summary><p>Sim. As duas coleções estão reunidas no pack K-Pop e Divas Pop, com uma única compra e um único canal.</p></details><details><summary>Preciso falar no WhatsApp para receber?</summary><p>No Pix, a entrega é automática por e-mail. No cartão, após a aprovação, envie a mensagem preenchida no WhatsApp para receber seu pacote pelo atendimento.</p></details><details><summary>Fechei a página. Como recupero?</summary><p>No Pix, use “Meus acessos” com o e-mail da compra. No cartão com entrega pelo WhatsApp, procure o atendimento.</p></details><details><summary>Posso compartilhar meu acesso?</summary><p>O link da sua compra é pessoal. Não compartilhe. Os conteúdos ficam em canais do WhatsApp; esse formato não oferece bloqueio absoluto contra repasse de links.</p></details></section>`;
     const showcase=document.createElement('section');showcase.id='previas';showcase.className='preview-showcase';
     document.querySelector('.faq details p').textContent=`Acesso aos 10 packs atuais, com ${catalogData.total} figurinhas no acervo anunciado. Esta compra não promete lançamentos futuros.`;
-    showcase.innerHTML=`<div class="section-head"><div><span class="eyebrow">Vitrine Texugo</span><h2>Escolha pela prévia.</h2></div><p>Clique para explorar as figurinhas de cada pack.</p></div><div class="preview-rail">${homepagePreviews(catalogData.packs).map(({pack:p,path})=>`<button class="preview-tile" data-preview="${p.id}" style="--accent:${p.color}" aria-label="Ver prévias de ${esc(p.title)}">${mediaMarkup(path,`Figurinha de ${p.title}`,true)}<span>${esc(p.title)}${p.adult?' · +18':''}</span></button>`).join('')}</div>`;
+    showcase.innerHTML=`<div class="section-head"><div><span class="eyebrow">Vitrine Texugo</span><h2>Escolha pela prévia.</h2></div><p>Clique para explorar as figurinhas de cada pack.</p></div><div class="preview-rail">${homepagePreviews(catalogData.packs).map(({pack:p,path})=>`<button class="preview-tile" data-preview="${p.id}" style="--accent:${p.color}" aria-label="Ver prévias de ${esc(p.title)}">${mediaMarkup(path,`Figurinha de ${p.title}`,true)}<span>${esc(p.title)}</span></button>`).join('')}</div>`;
     document.querySelector('#packs').before(showcase);
     startPreviewMarquee(showcase.querySelector('.preview-rail'));
     document.querySelector('.steps').insertAdjacentHTML('beforebegin',securePurchaseNotice());

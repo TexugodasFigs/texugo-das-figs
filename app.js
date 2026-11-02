@@ -6,6 +6,29 @@ let origin = params.get('origem') === 'uehara' ? 'uehara' : 'principal';
 const esc = text => String(text).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const money = cents => (cents/100).toLocaleString('pt-BR',{style:'currency',currency:'BRL'});
 const home = `/?origem=${origin}`;
+
+function showAgeNotice() {
+  if(routePath!=='/')return;
+  try { if(sessionStorage.getItem('texugo-age-confirmed')==='yes')return; } catch {}
+  const notice=document.createElement('dialog');
+  notice.className='age-notice';
+  notice.setAttribute('aria-labelledby','age-notice-title');
+  notice.setAttribute('aria-describedby','age-notice-description');
+  notice.innerHTML='<span class="age-badge" aria-hidden="true">18+</span><h2 id="age-notice-title">Antes de continuar</h2><p id="age-notice-description">Algumas figurinhas podem conter humor adulto e conteúdo de duplo sentido, mas nada explícito. Confirme que você tem 18 anos ou mais para continuar.</p><button class="button full" id="age-continue" autofocus>Tenho 18 anos ou mais e quero continuar</button><button class="button secondary full" id="age-exit">Não tenho 18 anos</button>';
+  notice.addEventListener('cancel',event=>event.preventDefault());
+  document.body.append(notice);
+  document.body.classList.add('age-notice-open');
+  notice.querySelector('#age-continue').addEventListener('click',()=>{
+    try { sessionStorage.setItem('texugo-age-confirmed','yes'); } catch {}
+    notice.close();notice.remove();document.body.classList.remove('age-notice-open');main.focus();
+  });
+  notice.querySelector('#age-exit').addEventListener('click',()=>{
+    notice.innerHTML='<span class="age-badge" aria-hidden="true">18+</span><h2 id="age-notice-title" tabindex="-1">Acesso reservado a maiores de 18 anos</h2><p id="age-notice-description">Você pode fechar esta aba. Obrigado pela compreensão.</p>';
+    notice.querySelector('h2').focus();
+  });
+  notice.showModal();
+}
+showAgeNotice();
 document.querySelector('#home-link').href = home;
 document.querySelector('#catalog-link').href = `${home}#packs`;
 document.querySelector('#recover-link').href = `/recuperar?origem=${origin}`;
@@ -85,8 +108,8 @@ else {
   const securePurchaseNotice = () => `<aside class="secure-purchase" aria-label="Compra segura"><span aria-hidden="true">✓</span><div><strong>Compra segura · Mercado Pago</strong><p>${catalogData.mode==='demo'?'Nesta prévia, pagamentos e e-mails são simulados. Nenhuma cobrança é realizada.':'Pagamento processado pelo Mercado Pago. Os dados do seu cartão não são armazenados na loja. No Pix, pague pelo aplicativo do seu banco e confira o valor e o destinatário antes de confirmar.'}</p><small>${true?'Pix: acesso automático por e-mail. Cartão: entrega pelo atendimento no WhatsApp após aprovação.':'Seu acesso é liberado após a confirmação do pagamento e também enviado por e-mail.'}</small></div></aside>`;
   const serviceUrl = pack => `https://wa.me/5588992367356?text=${encodeURIComponent(`Olá, Texugo das Figs! Gostaria de atendimento sobre o ${pack.id==='premium'?'Premium Pack':`pack ${pack.title}`}.`)}`;
   const mediaMarkup = (path, label, lazy=false) => path.endsWith('.mp4')
-    ? `<video ${lazy?`data-src="${esc(path)}"`:`src="${esc(path)}" controls`} muted loop playsinline preload="none" aria-label="${esc(label)}"></video>`
-    : `<img src="${esc(path)}" alt="${esc(label)}" loading="lazy">`;
+    ? `<video class="${path.includes('/previas/safadezas/')?'adult-preview':''}" ${lazy?`data-src="${esc(path)}"`:`src="${esc(path)}" controls`} muted loop playsinline preload="none" aria-label="${esc(label)}"></video>`
+    : `<img class="${path.includes('/previas/safadezas/')?'adult-preview':''}" src="${esc(path)}" alt="${esc(label)}" loading="lazy">`;
   const previewObserver = new IntersectionObserver(entries=>{
     for(const entry of entries) {
       const video=entry.target;

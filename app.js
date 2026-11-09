@@ -1,8 +1,8 @@
-import {storeParams,routePath,toStoreUrl,localizeCatalog,showcaseApi} from './github-runtime.js?v=f31b4474d000';
+import {storeParams,routePath,toStoreUrl,localizeCatalog,showcaseApi} from './github-runtime.js?v=d19cdc3dd845';
 import {trafficSource,withTrafficSource} from './traffic-source.js';
 const main = document.querySelector('#main');
 const params = storeParams;
-let origin = params.get('origem') === 'uehara' ? 'uehara' : 'principal';
+let origin = ['uehara','tiktok'].includes(params.get('origem')) ? params.get('origem') : 'principal';
 const esc = text => String(text).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const money = cents => (cents/100).toLocaleString('pt-BR',{style:'currency',currency:'BRL'});
 const home = `/?origem=${origin}`;
@@ -13,7 +13,7 @@ document.querySelector('#recover-link').href = `/recuperar?origem=${origin}`;
 document.querySelector('#previews-link').href = `${home}#previas`;
 document.querySelectorAll('.policy-links a').forEach(a=>{a.href=`${a.getAttribute('href')}?origem=${origin}`;});
 function updateOrigin(value) {
-  origin = value === 'uehara' ? 'uehara' : 'principal';
+  origin = ['uehara','tiktok'].includes(value) ? value : 'principal';
   document.querySelector('#home-link').href = `/?origem=${origin}`;
   document.querySelector('#catalog-link').href = `/?origem=${origin}#packs`;
   document.querySelector('#recover-link').href = `/recuperar?origem=${origin}`;
@@ -62,7 +62,7 @@ function startPreviewMarquee(rail) {
   }
   requestAnimationFrame(frame);
 }
-const catalogData = localizeCatalog(await api('/api/catalog').catch(()=>null));
+const catalogData = localizeCatalog(await api('/api/catalog'+(origin==='tiktok'?'?origem=tiktok':'')).catch(()=>null));
 // First-party counts only: daily session IDs, no IP, fingerprint or personal URLs.
 if(catalogData && ['/', '/checkout'].includes(routePath) && navigator.doNotTrack!=='1' && !navigator.globalPrivacyControl) {
   try {
@@ -81,6 +81,8 @@ if (!catalogData) { main.innerHTML = '<p class="error">Não foi possível carreg
 else {
   document.querySelector('#demo-banner').hidden = catalogData.mode === 'production';
   if(catalogData.mode==='sandbox')document.querySelector('#demo-banner').textContent='HOMOLOGAÇÃO · Use apenas conta e cartão de TESTE. Nenhuma compra real. Canais reais não são liberados aqui.';
+  const premiumPrice=money(catalogData.packs.find(pack=>pack.id==='premium').amountCents);
+  const individualPrice=money(catalogData.packs.find(pack=>pack.id!=='premium').amountCents);
   const checkoutUrl = id => withTrafficSource(`/checkout?pack=${encodeURIComponent(id)}&origem=${origin}`);
   const purchaseConditions = () => '<aside class="purchase-conditions" aria-label="Acesso e atendimento"><strong>Acesso vitalício às figurinhas</strong><p>Atendimento: todos os dias, das 9h às 22h (horário de Brasília).</p><details><summary>Sobre a recuperação do acesso</summary><p>O acesso vitalício é liberado após a confirmação do pagamento, sem mensalidade. '+(true?'No cartão, receba atendimento e entrega pelo WhatsApp. No Pix, o acesso é automático e pode ser recuperado por e-mail em “Meus acessos”.':'Se o link pessoal expirar, recupere-o em “Meus acessos” usando o e-mail da compra sempre que precisar. O pagamento e a entrega automática podem funcionar fora do horário de atendimento.')+'</p></details></aside>';
   const securePurchaseNotice = () => `<aside class="secure-purchase" aria-label="Compra segura"><span aria-hidden="true">✓</span><div><strong>Compra segura · Mercado Pago</strong><p>${catalogData.mode==='demo'?'Nesta prévia, pagamentos e e-mails são simulados. Nenhuma cobrança é realizada.':'Pagamento processado pelo Mercado Pago. Os dados do seu cartão não são armazenados na loja. No Pix, pague pelo aplicativo do seu banco e confira o valor e o destinatário antes de confirmar.'}</p><small>${true?'Pix: acesso automático por e-mail. Cartão: entrega pelo atendimento no WhatsApp após aprovação.':'Seu acesso é liberado após a confirmação do pagamento e também enviado por e-mail.'}</small></div></aside>`;
@@ -119,9 +121,9 @@ else {
   function shop() {
     main.innerHTML = `<section class="hero"><div><span class="eyebrow">A loja do Texugo</span><h1>Sua conversa merece <em>figurinhas incríveis.</em></h1><p>Humor, memes, anime e figurinhas de todos os temas para seu WhatsApp.</p><div class="hero-proof"><div class="hero-icons" aria-hidden="true"><span><svg viewBox="0 0 24 24"><path d="M12 3a9 9 0 0 0-8 13l-1 5 5-2a9 9 0 1 0 4-16Z"/><circle cx="8" cy="11" r="1"/><circle cx="12" cy="11" r="1"/><circle cx="16" cy="11" r="1"/></svg></span><span><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><circle cx="9" cy="9" r="1"/><circle cx="15" cy="9" r="1"/><path d="M8 14h8c-1 5-7 5-8 0Z"/></svg></span><span><svg viewBox="0 0 24 24"><path d="m14 2-9 12h6l-1 8 9-13h-6l1-7Z"/></svg></span></div><div><strong>+ de ${catalogData.total} figurinhas</strong><small>prontas para usar</small></div></div></div><div class="hero-art"><img src="./media/logo-recortada-20261014.png" alt="Logo original Texugo das Figs" width="1354" height="1161"></div></section>
     <section id="packs"><div class="section-head"><div><span class="eyebrow">Escolha pela sua vibe</span><h2>Um pack para cada momento.</h2></div><input class="search" id="search" type="search" placeholder="Buscar um pack…" aria-label="Buscar packs"></div><div class="filters" aria-label="Filtrar packs">${[['all','Todos'],['humor','Humor'],['fandoms','Fandoms'],['games','Games'],['esportes','Esportes'],['lifestyle','Dia a dia']].map(([id,label])=>`<button class="filter" data-category="${id}" aria-pressed="${id==='all'}">${label}</button>`).join('')}</div><div class="grid" id="grid"></div></section>
-    <section class="premium-promo" aria-label="Promoção Premium"><div><span class="eyebrow">Mais figurinhas. Melhor custo-benefício.</span><h2>Todos os 10 packs. Uma única compra.</h2><p><strong>+ de ${catalogData.total} figurinhas</strong> para responder, rir e entrar na resenha. Acesso vitalício aos packs atuais, sem mensalidade.</p></div><div class="premium-promo-buy"><strong>${money(1990)}</strong><a class="button" href="${checkoutUrl('premium')}">Quero o Premium</a></div></section>
+    <section class="premium-promo" aria-label="Promoção Premium"><div><span class="eyebrow">Mais figurinhas. Melhor custo-benefício.</span><h2>Todos os 10 packs. Uma única compra.</h2><p><strong>+ de ${catalogData.total} figurinhas</strong> para responder, rir e entrar na resenha. Acesso vitalício aos packs atuais, sem mensalidade.</p></div><div class="premium-promo-buy"><strong>${premiumPrice}</strong><a class="button" href="${checkoutUrl('premium')}">Quero o Premium</a></div></section>
     <div class="benefits"><span>Pagamento único</span><span>Pix ou cartão no checkout</span><span>Acesso após confirmação</span><span>Pix automático · Cartão pelo WhatsApp</span></div>
-    <section class="steps"><h2>Da compra ao seu WhatsApp, sem complicação.</h2><div class="step-grid"><div><span>01 · ESCOLHA</span><b>Encontre sua coleção</b><p>Avulso por R$ 9,90 ou todos os packs atuais no Premium por R$ 19,90.</p></div><div><span>02 · PAGUE</span><b>Escolha Pix ou cartão</b><p>Pix com entrega automática. Cartão pelo link seguro do Mercado Pago.</p></div><div><span>03 · ACESSE</span><b>Abra seus packs</b><p>No Pix, receba o acesso por e-mail. No cartão aprovado, vá ao WhatsApp com a mensagem do pacote pronta.</p></div></div></section>
+    <section class="steps"><h2>Da compra ao seu WhatsApp, sem complicação.</h2><div class="step-grid"><div><span>01 · ESCOLHA</span><b>Encontre sua coleção</b><p>Avulso por ${individualPrice} ou todos os packs atuais no Premium por ${premiumPrice}.</p></div><div><span>02 · PAGUE</span><b>Escolha Pix ou cartão</b><p>Pix com entrega automática. Cartão pelo link seguro do Mercado Pago.</p></div><div><span>03 · ACESSE</span><b>Abra seus packs</b><p>No Pix, receba o acesso por e-mail. No cartão aprovado, vá ao WhatsApp com a mensagem do pacote pronta.</p></div></div></section>
     <section class="faq"><h2>Antes de mandar a primeira figurinha.</h2><details><summary>O que recebo no Premium?</summary><p>Acesso aos 10 packs atuais. Esta compra não promete lançamentos futuros. O acervo anunciado possui ${catalogData.total} figurinhas.</p></details><details><summary>K-Pop e Divas Pop são um único pack?</summary><p>Sim. As duas coleções estão reunidas no pack K-Pop e Divas Pop, com uma única compra e um único canal.</p></details><details><summary>Preciso falar no WhatsApp para receber?</summary><p>No Pix, a entrega é automática por e-mail. No cartão, após a aprovação, envie a mensagem preenchida no WhatsApp para receber seu pacote pelo atendimento.</p></details><details><summary>Fechei a página. Como recupero?</summary><p>No Pix, use “Meus acessos” com o e-mail da compra. No cartão com entrega pelo WhatsApp, procure o atendimento.</p></details><details><summary>Posso compartilhar meu acesso?</summary><p>O link da sua compra é pessoal. Não compartilhe. Os conteúdos ficam em canais do WhatsApp; esse formato não oferece bloqueio absoluto contra repasse de links.</p></details></section>`;
     const showcase=document.createElement('section');showcase.id='previas';showcase.className='preview-showcase';
     document.querySelector('.faq details p').textContent=`Acesso aos 10 packs atuais, com ${catalogData.total} figurinhas no acervo anunciado. Esta compra não promete lançamentos futuros.`;

@@ -1,4 +1,4 @@
-import {storeParams,routePath,toStoreUrl,localizeCatalog,showcaseApi} from './github-runtime.js?v=d19cdc3dd845';
+import {storeParams,routePath,toStoreUrl,localizeCatalog,showcaseApi} from './github-runtime.js?v=b1e9acb19bac';
 import {trafficSource,withTrafficSource} from './traffic-source.js';
 const main = document.querySelector('#main');
 const params = storeParams;
